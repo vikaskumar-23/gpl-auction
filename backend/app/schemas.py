@@ -39,3 +39,8 @@ class Auction(BaseModel):
 
 class StartRequest(BaseModel):
     player_id: int
+
+
+class BidRequest(BaseModel):
+    team_id: int
+    amount: int = Field(gt=0, description="₹ lakh")

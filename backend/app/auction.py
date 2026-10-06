@@ -82,6 +82,13 @@ def _bids(conn, player_id: int) -> list[dict]:
     return [dict(r) for r in rows]
 
 
+def _require_current_player(conn) -> dict:
+    player = _current_player(conn)
+    if player is None:
+        raise AuctionError(409, "NO_ACTIVE_AUCTION", "No player is up for auction right now.")
+    return player
+
+
 # ---------- writes ----------
 
 
@@ -103,3 +110,38 @@ def start_auction(conn: sqlite3.Connection, player_id: int) -> dict:
             )
         conn.execute("UPDATE players SET status = 'in_auction' WHERE id = ?", (player_id,))
         return current_auction(conn)
+
+
+def place_bid(conn: sqlite3.Connection, team_id: int, amount: int) -> dict:
+    with transaction(conn):
+        player = _require_current_player(conn)
+        team = conn.execute(
+            "SELECT name, remaining_budget FROM teams WHERE id = ?", (team_id,)
+        ).fetchone()
+        if team is None:
+            raise AuctionError(404, "TEAM_NOT_FOUND", f"There is no team with id {team_id}.")
+        bids = _bids(conn, player["id"])
+        top = bids[0] if bids else None
+        if top and top["team_id"] == team_id:
+            raise AuctionError(
+                409,
+                "ALREADY_HIGHEST_BIDDER",
+                f"{team['name']} already holds the highest bid. Wait for another team to bid.",
+            )
+        if amount <= player["base_price"]:
+            raise AuctionError(
+                400,
+                "BID_NOT_ABOVE_BASE",
+                f"Bid must be more than the base price of {money(player['base_price'])}.",
+            )
+        if top and amount <= top["amount"]:
+            raise AuctionError(
+                400,
+                "BID_NOT_ABOVE_HIGHEST",
+                f"Bid must be more than the current highest bid of {money(top['amount'])}.",
+            )
+        conn.execute(
+            "INSERT INTO bids (player_id, team_id, amount) VALUES (?, ?, ?)",
+            (player["id"], team_id, amount),
+        )
+        return _bids(conn, player["id"])[0]  # the new bid is now the highest

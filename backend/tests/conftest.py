@@ -24,3 +24,10 @@ def start(client):
     return lambda player_id: client.post(
         "/api/auction/start", json={"player_id": player_id}, headers=AUCTIONEER
     )
+
+
+@pytest.fixture
+def bid(client):
+    return lambda team_id, amount: client.post(
+        "/api/auction/bids", json={"team_id": team_id, "amount": amount}, headers=MANAGER
+    )
