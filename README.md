@@ -6,6 +6,8 @@ A live player auction for the **IIT Goa Premier League**. One auctioneer puts pl
 
 **Stack:** FastAPI (Python 3.11) · SQLite · Server-Sent Events · React 19 + Vite · Tailwind CSS v4 · pytest · GitHub Actions · Docker
 
+![Auction board on desktop, auctioneer view](docs/screenshots/board-desktop.png)
+
 ---
 
 ## Contents
@@ -13,6 +15,7 @@ A live player auction for the **IIT Goa Premier League**. One auctioneer puts pl
 - [Run it](#run-it)
 - [Tests](#tests)
 - [Using the app](#using-the-app)
+- [Screenshots](#screenshots)
 - [Assumptions](#assumptions)
 - [Bid rules](#bid-rules)
 - [API reference](#api-reference)
@@ -116,6 +119,20 @@ The first screen is a role picker. There is no login or password, as the brief a
 | **Spectator** | Sees the board and team sheets, with no controls. |
 
 To simulate the room on one machine, open several browser tabs: one auctioneer, two to four managers and a spectator. The choice is remembered per tab across refreshes, and **Switch role** goes back to the picker.
+
+---
+
+## Screenshots
+
+**Desktop, auctioneer:** player pool, the player on the block with the highest bid as scoreboard plates, and team sheets with budgets (top of this page).
+
+| Manager on a phone | Over-budget bid refused | Choosing a role |
+|---|---|---|
+| ![Manager view on a phone](docs/screenshots/board-phone.png) | ![Over-budget error on a phone](docs/screenshots/bid-error-phone.png) | ![Role picker on a phone](docs/screenshots/role-picker-phone.png) |
+
+**Team sheets (rosters):** each team's players with the price paid, and the budget left.
+
+![Team sheets](docs/screenshots/rosters.png)
 
 ---
 
