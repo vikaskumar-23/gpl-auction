@@ -20,8 +20,8 @@ class AuctionError(Exception):
 
 
 def money(lakh: int) -> str:
-    """1000 -> 'â‚¹10 Cr', 150 -> 'â‚¹1.5 Cr', 75 -> 'â‚¹75 L'."""
-    return f"â‚¹{lakh / 100:g} Cr" if lakh >= 100 else f"â‚¹{lakh} L"
+    """1000 -> 'Ã¢â€šÂ¹10 Cr', 150 -> 'Ã¢â€šÂ¹1.5 Cr', 75 -> 'Ã¢â€šÂ¹75 L'."""
+    return f"Ã¢â€šÂ¹{lakh / 100:g} Cr" if lakh >= 100 else f"Ã¢â€šÂ¹{lakh} L"
 
 
 # ---------- reads ----------
@@ -169,7 +169,7 @@ def accept_bid(conn: sqlite3.Connection, bid_id: int) -> dict:
             raise AuctionError(
                 409,
                 "BID_NOT_HIGHEST",
-                f"That is no longer the highest bid: {top['team_name']} now leads "
+                f"That is no longer the highest bid: {top['team_name']} now lead "
                 f"with {money(top['amount'])}.",
             )
         conn.execute(
