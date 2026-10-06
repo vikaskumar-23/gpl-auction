@@ -49,7 +49,7 @@ export function ScorePlates({ lakh }) {
   return (
     <p className="flex items-end gap-1.5">
       <span className="sr-only">{money(lakh)}</span>
-      <span aria-hidden className="mr-1 self-center font-display text-3xl font-bold text-chalk-muted">
+      <span aria-hidden className="mr-1 self-center text-3xl font-semibold text-chalk-muted">
         ₹
       </span>
       {[...value].map((ch, i) => (
