@@ -1,49 +1,62 @@
-import { TeamDot } from './ui'
+import { teamColor } from '../lib/format'
 
 function RoleButton({ title, subtitle, teamId, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-2xl border border-white/10 bg-slate-900/70 p-4 text-left transition hover:border-amber-400/60 focus-visible:outline-2 focus-visible:outline-amber-400"
+      style={teamId ? { borderLeftColor: teamColor(teamId) } : undefined}
+      className={`w-full rounded-md border border-pitch-700 bg-pitch-900 px-4 py-3 text-left transition hover:bg-pitch-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sun ${teamId ? 'border-l-4' : ''}`}
     >
-      <span className="flex items-center gap-2 font-semibold">
-        {teamId && <TeamDot teamId={teamId} />}
-        {title}
-      </span>
-      <span className="mt-1 block text-sm text-slate-400">{subtitle}</span>
+      <span className="block font-display text-xl font-bold">{title}</span>
+      <span className="block text-sm text-chalk-muted">{subtitle}</span>
     </button>
+  )
+}
+
+function Group({ label, children }) {
+  return (
+    <div className="space-y-2">
+      <h2 className="text-sm font-medium text-chalk-muted">{label}</h2>
+      {children}
+    </div>
   )
 }
 
 export default function RolePicker({ teams, onChoose }) {
   return (
-    <main className="mx-auto max-w-xl space-y-4 p-4 py-10">
-      <header className="mb-6 text-center">
-        <p className="text-xs uppercase tracking-widest text-amber-400">IIT Goa Premier League</p>
-        <h1 className="mt-1 text-3xl font-bold">Player Auction</h1>
-        <p className="mt-2 text-slate-400">Pick your role to join. No password needed, this is a demo.</p>
+    <main className="mx-auto max-w-xl space-y-8 px-4 py-12">
+      <header>
+        <p className="text-chalk-muted">IIT Goa Premier League</p>
+        <h1 className="font-display text-6xl font-extrabold leading-none">Player Auction</h1>
+        <p className="mt-3 text-chalk-muted">Choose how you are joining. There is no password; this is a demo.</p>
       </header>
-      <RoleButton
-        title="Auctioneer"
-        subtitle="Put players up, accept or reject bids"
-        onClick={() => onChoose({ role: 'auctioneer' })}
-      />
-      <div className="grid gap-3 sm:grid-cols-2">
-        {teams.map((t) => (
-          <RoleButton
-            key={t.id}
-            teamId={t.id}
-            title={t.name}
-            subtitle="Team manager: place bids"
-            onClick={() => onChoose({ role: 'manager', teamId: t.id })}
-          />
-        ))}
-      </div>
-      <RoleButton
-        title="Spectator"
-        subtitle="Watch the auction and rosters"
-        onClick={() => onChoose({ role: 'viewer' })}
-      />
+      <Group label="Run the room">
+        <RoleButton
+          title="Auctioneer"
+          subtitle="Put players up, then sell to the highest bid or reject the round"
+          onClick={() => onChoose({ role: 'auctioneer' })}
+        />
+      </Group>
+      <Group label="Bid for a team">
+        <div className="grid gap-2 sm:grid-cols-2">
+          {teams.map((t) => (
+            <RoleButton
+              key={t.id}
+              teamId={t.id}
+              title={t.name}
+              subtitle="Team manager"
+              onClick={() => onChoose({ role: 'manager', teamId: t.id })}
+            />
+          ))}
+        </div>
+      </Group>
+      <Group label="Just watching">
+        <RoleButton
+          title="Spectator"
+          subtitle="Follow the bids and team sheets"
+          onClick={() => onChoose({ role: 'viewer' })}
+        />
+      </Group>
     </main>
   )
 }

@@ -1,5 +1,43 @@
 @import "tailwindcss";
 
+/* Manual cricket scoreboard: pavilion green boards, chalk numerals, scoreboard yellow for money. */
+@theme {
+  --font-display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+  --font-sans: "Barlow", ui-sans-serif, system-ui, sans-serif;
+
+  --color-pitch-950: #0a1a13; /* page */
+  --color-pitch-900: #0f251b; /* boards */
+  --color-pitch-800: #173527; /* raised rows */
+  --color-pitch-700: #2a4d3f; /* rules */
+  --color-plate: #06100b; /* number plates */
+  --color-chalk: #efe8d4; /* text and numerals */
+  --color-chalk-muted: #a7b9ae;
+  --color-sun: #f5c451; /* money, primary action */
+  --color-laterite: #e0775f; /* reject, errors */
+}
+
 body {
-  @apply bg-slate-950 text-slate-100 antialiased;
+  @apply bg-pitch-950 font-sans text-chalk antialiased;
+}
+
+/* The one moving part: bid plates flip in like a scoreboard number change. */
+@keyframes plate-flip {
+  from {
+    transform: perspective(300px) rotateX(-90deg);
+    opacity: 0;
+  }
+  to {
+    transform: perspective(300px) rotateX(0);
+    opacity: 1;
+  }
+}
+
+.plate {
+  animation: plate-flip 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate {
+    animation: none;
+  }
 }

@@ -22,7 +22,8 @@ export default function App() {
     return <RolePicker teams={state.teams} onChoose={choose} />
   }
 
-  const who = session.role === 'auctioneer' ? 'Auctioneer' : myTeam ? `${myTeam.name} · Manager` : 'Spectator'
+  const who =
+    session.role === 'auctioneer' ? 'Running the auction' : myTeam ? `Managing ${myTeam.name}` : 'Watching as a spectator'
 
   return (
     <div className="min-h-dvh">
