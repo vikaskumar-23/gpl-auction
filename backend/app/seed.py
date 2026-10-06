@@ -36,6 +36,4 @@ def seed_if_empty(conn: sqlite3.Connection) -> None:
             "INSERT INTO teams (name, total_budget, remaining_budget) VALUES (?, ?, ?)",
             [(name, TOTAL_BUDGET, TOTAL_BUDGET) for name in TEAMS],
         )
-        conn.executemany(
-            "INSERT INTO players (name, skill, base_price) VALUES (?, ?, ?)", PLAYERS
-        )
+        conn.executemany("INSERT INTO players (name, skill, base_price) VALUES (?, ?, ?)", PLAYERS)

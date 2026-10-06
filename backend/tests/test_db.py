@@ -22,9 +22,7 @@ def test_seed_runs_once_with_four_teams_and_at_least_12_players(conn):
         "SELECT name, total_budget, remaining_budget FROM teams ORDER BY id"
     ).fetchall()
     assert [t["name"] for t in teams] == TEAMS and len(TEAMS) == 4
-    assert all(
-        t["total_budget"] == t["remaining_budget"] == TOTAL_BUDGET for t in teams
-    )
+    assert all(t["total_budget"] == t["remaining_budget"] == TOTAL_BUDGET for t in teams)
 
     statuses = [r["status"] for r in conn.execute("SELECT status FROM players")]
     assert len(statuses) == len(PLAYERS) >= 12
