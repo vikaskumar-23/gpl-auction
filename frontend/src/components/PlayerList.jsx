@@ -26,7 +26,8 @@ export default function PlayerList({ players, canStart, auctionActive, className
       {available.length === 0 ? (
         <p className="text-chalk-muted">Every player has been sold.</p>
       ) : (
-        <ul className="-my-2 divide-y divide-pitch-700/60">
+        // desktop: the pool scrolls inside its board so all three columns stay in view
+        <ul className="-my-2 divide-y divide-pitch-700/60 lg:max-h-[calc(100dvh-11rem)] lg:overflow-y-auto lg:pr-1">
           {available.map((p) => (
             <li key={p.id} className="flex items-center justify-between gap-3 py-2">
               <div className="min-w-0">

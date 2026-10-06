@@ -48,7 +48,7 @@ export default function AuctionStage({ auction, className = '', children }) {
                   <span className="truncate">{b.team_name}</span>
                 </span>
                 <span className="flex shrink-0 items-baseline gap-3 tabular-nums">
-                  <time dateTime={b.created_at} className="text-xs text-chalk-muted">
+                  <time dateTime={b.created_at} className="hidden text-xs text-chalk-muted min-[400px]:inline">
                     {new Date(b.created_at).toLocaleTimeString()}
                   </time>
                   <span className="font-semibold">{money(b.amount)}</span>

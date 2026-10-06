@@ -36,7 +36,7 @@ export default function AuctioneerPanel({ auction }) {
               run(() => api.accept(top.id), `Sell ${player.name} to ${top.team_name} for ${money(top.amount)}?`)
             }
           >
-            {top ? `Sell to ${top.team_name} for ${money(top.amount)}` : 'No bids to accept yet'}
+            {top ? `Sell for ${money(top.amount)}` : 'No bids to accept yet'}
           </Button>
           <Button
             variant="danger"

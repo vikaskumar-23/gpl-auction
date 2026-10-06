@@ -66,13 +66,13 @@ export default function BidBox({ team, auction }) {
               Place bid
             </Button>
           </div>
-          <div className="flex flex-wrap gap-2" aria-label="Quick amounts">
+          <div className="grid grid-cols-4 gap-2" aria-label="Quick amounts">
             {RAISES.map((r) => (
               <Button
                 key={r}
                 type="button"
                 variant="ghost"
-                className="min-h-9 px-3 text-sm"
+                className="min-h-9 px-2 text-sm"
                 onClick={() => setAmount(String(toBeat + r))}
               >
                 +{r} L

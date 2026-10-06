@@ -47,7 +47,8 @@ function TeamSheet({ team, mine }) {
 export default function Rosters({ teams, myTeamId, className = '' }) {
   return (
     <section aria-labelledby="team-sheets" className={className}>
-      <h2 id="team-sheets" className="mb-3 font-display text-2xl font-extrabold leading-none">
+      {/* top padding lines this heading up with the board headings beside it */}
+      <h2 id="team-sheets" className="mb-3 font-display text-2xl font-extrabold leading-none lg:pt-[13px]">
         Team sheets
       </h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
