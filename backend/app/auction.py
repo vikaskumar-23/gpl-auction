@@ -144,8 +144,8 @@ def place_bid(conn: sqlite3.Connection, team_id: int, amount: int) -> dict:
             raise AuctionError(
                 400,
                 "OVER_BUDGET",
-                f"{money(amount)} is more than {team['name']}'s remaining budget "
-                f"of {money(team['remaining_budget'])}.",
+                f"{money(amount)} is more than the remaining budget of {team['name']} "
+                f"({money(team['remaining_budget'])}).",
             )
         conn.execute(
             "INSERT INTO bids (player_id, team_id, amount) VALUES (?, ?, ?)",
