@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AuctioneerPanel from './components/AuctioneerPanel'
 import AuctionStage from './components/AuctionStage'
 import BidBox from './components/BidBox'
 import Header from './components/Header'
@@ -36,11 +37,14 @@ export default function App() {
         <AuctionStage auction={state.auction} className="lg:order-2">
           {/* keyed by player: a new player on the block resets the amount and any error */}
           {myTeam && <BidBox key={state.auction.player?.id ?? 'idle'} team={myTeam} auction={state.auction} />}
+          {session.role === 'auctioneer' && (
+            <AuctioneerPanel key={state.auction.player?.id ?? 'idle'} auction={state.auction} />
+          )}
         </AuctionStage>
         <PlayerList
           className="lg:order-1"
           players={state.players}
-          canStart={false}
+          canStart={session.role === 'auctioneer'}
           auctionActive={!!state.auction.player}
         />
       </main>
