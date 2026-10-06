@@ -20,8 +20,8 @@ class AuctionError(Exception):
 
 
 def money(lakh: int) -> str:
-    """1000 -> '₹10 Cr', 150 -> '₹1.5 Cr', 75 -> '₹75 L'."""
-    return f"₹{lakh / 100:g} Cr" if lakh >= 100 else f"₹{lakh} L"
+    """1000 -> 'â‚¹10 Cr', 150 -> 'â‚¹1.5 Cr', 75 -> 'â‚¹75 L'."""
+    return f"â‚¹{lakh / 100:g} Cr" if lakh >= 100 else f"â‚¹{lakh} L"
 
 
 # ---------- reads ----------
@@ -126,7 +126,7 @@ def place_bid(conn: sqlite3.Connection, team_id: int, amount: int) -> dict:
             raise AuctionError(
                 409,
                 "ALREADY_HIGHEST_BIDDER",
-                f"{team['name']} already holds the highest bid. Wait for another team to bid.",
+                f"{team['name']} already hold the highest bid. Wait for another team to bid.",
             )
         if amount <= player["base_price"]:
             raise AuctionError(
