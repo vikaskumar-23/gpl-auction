@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import AuctionStage from './components/AuctionStage'
+import BidBox from './components/BidBox'
 import Header from './components/Header'
 import PlayerList from './components/PlayerList'
 import RolePicker from './components/RolePicker'
@@ -32,7 +33,10 @@ export default function App() {
       <Header who={who} connected={connected} onSwitch={() => choose(null)} />
       {/* Phone: stage, pool, teams stacked. Desktop: pool | stage | teams. */}
       <main className="mx-auto grid max-w-7xl items-start gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,1fr)]">
-        <AuctionStage auction={state.auction} className="lg:order-2" />
+        <AuctionStage auction={state.auction} className="lg:order-2">
+          {/* keyed by player: a new player on the block resets the amount and any error */}
+          {myTeam && <BidBox key={state.auction.player?.id ?? 'idle'} team={myTeam} auction={state.auction} />}
+        </AuctionStage>
         <PlayerList
           className="lg:order-1"
           players={state.players}
