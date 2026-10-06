@@ -89,7 +89,9 @@ def test_bid_above_remaining_budget_is_refused_with_a_clear_error(start, bid):
     start(PLAYER)
     r = bid(1, TOTAL_BUDGET + 1)
     assert r.status_code == 400 and code(r) == "OVER_BUDGET"
-    assert "remaining budget" in r.json()["error"]["message"]
+    assert r.json()["error"]["message"] == (
+        "₹10.01 Cr is more than the remaining budget of Panjim Pirates (₹10 Cr)."
+    )
     assert bid(1, TOTAL_BUDGET).status_code == 201  # spending the whole budget is allowed
 
 

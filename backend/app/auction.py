@@ -20,8 +20,8 @@ class AuctionError(Exception):
 
 
 def money(lakh: int) -> str:
-    """1000 -> 'Ã¢â€šÂ¹10 Cr', 150 -> 'Ã¢â€šÂ¹1.5 Cr', 75 -> 'Ã¢â€šÂ¹75 L'."""
-    return f"Ã¢â€šÂ¹{lakh / 100:g} Cr" if lakh >= 100 else f"Ã¢â€šÂ¹{lakh} L"
+    """1000 -> '₹10 Cr', 150 -> '₹1.5 Cr', 75 -> '₹75 L'."""
+    return f"₹{lakh / 100:g} Cr" if lakh >= 100 else f"₹{lakh} L"
 
 
 # ---------- reads ----------
