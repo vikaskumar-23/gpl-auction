@@ -1,12 +1,15 @@
 """HTTP API for the GPL auction."""
 
+import asyncio
 import sqlite3
+from collections.abc import AsyncIterable
 from contextlib import asynccontextmanager, closing
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi.sse import EventSourceResponse, ServerSentEvent
 
 from app import auction
 from app.auction import AuctionError
@@ -25,6 +28,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="GPL Auction API", version="1.0.0", lifespan=lifespan)
 Conn = Annotated[sqlite3.Connection, Depends(get_conn)]
+
+# Change counter polled by each SSE stream. Fine for one server process; a multi-worker
+# deployment would need a shared channel such as Redis pub/sub instead.
+_version = 0
+
+
+def notify() -> None:
+    global _version
+    _version += 1
 
 
 def error(status: int, code: str, message: str) -> JSONResponse:
@@ -85,7 +97,9 @@ def get_auction(conn: Conn):
     dependencies=[require_role("auctioneer")],
 )
 def start_auction(body: StartRequest, conn: Conn):
-    return auction.start_auction(conn, body.player_id)
+    result = auction.start_auction(conn, body.player_id)
+    notify()
+    return result
 
 
 @app.post(
@@ -95,7 +109,9 @@ def start_auction(body: StartRequest, conn: Conn):
     dependencies=[require_role("manager")],
 )
 def place_bid(body: BidRequest, conn: Conn):
-    return auction.place_bid(conn, body.team_id, body.amount)
+    result = auction.place_bid(conn, body.team_id, body.amount)
+    notify()
+    return result
 
 
 @app.post(
@@ -104,7 +120,9 @@ def place_bid(body: BidRequest, conn: Conn):
     dependencies=[require_role("auctioneer")],
 )
 def accept_bid(body: AcceptRequest, conn: Conn):
-    return auction.accept_bid(conn, body.bid_id)
+    result = auction.accept_bid(conn, body.bid_id)
+    notify()
+    return result
 
 
 @app.post(
@@ -113,4 +131,22 @@ def accept_bid(body: AcceptRequest, conn: Conn):
     dependencies=[require_role("auctioneer")],
 )
 def reject_round(conn: Conn):
-    return auction.reject_round(conn)
+    result = auction.reject_round(conn)
+    notify()
+    return result
+
+
+# ---------- live updates ----------
+
+
+@app.get("/api/events", response_class=EventSourceResponse)
+async def events() -> AsyncIterable[ServerSentEvent]:
+    """Full state on connect, then again after every change. EventSource reconnects by itself."""
+    seen = None
+    while True:
+        if seen != _version:
+            seen = _version
+            with closing(connect()) as conn:
+                state = auction.snapshot(conn)
+            yield ServerSentEvent(event="state", data=state)
+        await asyncio.sleep(0.25)
