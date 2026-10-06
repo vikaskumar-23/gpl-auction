@@ -139,14 +139,22 @@ def reject_round(conn: Conn):
 # ---------- live updates ----------
 
 
+TICK = 0.25  # seconds between change checks
+PING_EVERY = 15  # seconds of quiet before a ping, so clients can spot a dead connection
+
+
 @app.get("/api/events", response_class=EventSourceResponse)
 async def events() -> AsyncIterable[ServerSentEvent]:
-    """Full state on connect, then again after every change. EventSource reconnects by itself."""
-    seen = None
+    """Full state on connect and after every change; a ping when nothing has happened for a while."""
+    seen, quiet = None, 0.0
     while True:
         if seen != _version:
-            seen = _version
+            seen, quiet = _version, 0.0
             with closing(connect()) as conn:
                 state = auction.snapshot(conn)
             yield ServerSentEvent(event="state", data=state)
-        await asyncio.sleep(0.25)
+        elif quiet >= PING_EVERY:
+            quiet = 0.0
+            yield ServerSentEvent(event="ping", data=1)
+        await asyncio.sleep(TICK)
+        quiet += TICK
