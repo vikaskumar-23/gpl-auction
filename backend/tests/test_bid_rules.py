@@ -1,3 +1,8 @@
+import threading
+from contextlib import closing
+
+from app import auction
+from app.db import connect
 from app.seed import TOTAL_BUDGET
 
 PLAYER = 9  # Meera Shetye; tests read her base price from the API
@@ -96,3 +101,26 @@ def test_budget_check_uses_what_is_left_after_a_purchase(start, bid, accept):
     r = bid(1, 101)
     assert r.status_code == 400 and code(r) == "OVER_BUDGET"
     assert bid(1, 100).status_code == 201
+
+
+def test_simultaneous_equal_bids_store_exactly_one(start):
+    base = start(PLAYER).json()["player"]["base_price"]
+    barrier = threading.Barrier(4)
+    outcomes = []
+
+    def place(team_id):
+        with closing(connect()) as conn:
+            barrier.wait()  # release all four bids at the same instant
+            try:
+                auction.place_bid(conn, team_id, base + 10)
+                outcomes.append("stored")
+            except auction.AuctionError as e:
+                outcomes.append(e.code)
+
+    threads = [threading.Thread(target=place, args=(t,)) for t in (1, 2, 3, 4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert sorted(outcomes) == ["BID_NOT_ABOVE_HIGHEST"] * 3 + ["stored"]
