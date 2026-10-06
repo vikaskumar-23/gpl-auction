@@ -86,3 +86,13 @@ def test_bid_above_remaining_budget_is_refused_with_a_clear_error(start, bid):
     assert r.status_code == 400 and code(r) == "OVER_BUDGET"
     assert "remaining budget" in r.json()["error"]["message"]
     assert bid(1, TOTAL_BUDGET).status_code == 201  # spending the whole budget is allowed
+
+
+def test_budget_check_uses_what_is_left_after_a_purchase(start, bid, accept):
+    start(PLAYER)
+    bid(1, 900)
+    accept()  # team 1 now has 100 left
+    start(14)  # Neel Parab, base 20
+    r = bid(1, 101)
+    assert r.status_code == 400 and code(r) == "OVER_BUDGET"
+    assert bid(1, 100).status_code == 201

@@ -31,3 +31,18 @@ def bid(client):
     return lambda team_id, amount: client.post(
         "/api/auction/bids", json={"team_id": team_id, "amount": amount}, headers=MANAGER
     )
+
+
+@pytest.fixture
+def accept(client):
+    def _accept(bid_id=None):
+        if bid_id is None:  # default: the current highest bid
+            bid_id = client.get("/api/auction").json()["bids"][0]["id"]
+        return client.post("/api/auction/accept", json={"bid_id": bid_id}, headers=AUCTIONEER)
+
+    return _accept
+
+
+@pytest.fixture
+def reject(client):
+    return lambda: client.post("/api/auction/reject", headers=AUCTIONEER)
