@@ -140,6 +140,13 @@ def place_bid(conn: sqlite3.Connection, team_id: int, amount: int) -> dict:
                 "BID_NOT_ABOVE_HIGHEST",
                 f"Bid must be more than the current highest bid of {money(top['amount'])}.",
             )
+        if amount > team["remaining_budget"]:
+            raise AuctionError(
+                400,
+                "OVER_BUDGET",
+                f"{money(amount)} is more than {team['name']}'s remaining budget "
+                f"of {money(team['remaining_budget'])}.",
+            )
         conn.execute(
             "INSERT INTO bids (player_id, team_id, amount) VALUES (?, ?, ?)",
             (player["id"], team_id, amount),

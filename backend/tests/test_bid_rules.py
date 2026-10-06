@@ -1,3 +1,5 @@
+from app.seed import TOTAL_BUDGET
+
 PLAYER = 9  # Meera Shetye; tests read her base price from the API
 
 
@@ -76,3 +78,11 @@ def test_malformed_amount_gets_a_readable_error(client, start):
         )
         assert r.status_code == 422 and code(r) == "VALIDATION_ERROR"
         assert r.json()["error"]["message"].startswith("amount:")
+
+
+def test_bid_above_remaining_budget_is_refused_with_a_clear_error(start, bid):
+    start(PLAYER)
+    r = bid(1, TOTAL_BUDGET + 1)
+    assert r.status_code == 400 and code(r) == "OVER_BUDGET"
+    assert "remaining budget" in r.json()["error"]["message"]
+    assert bid(1, TOTAL_BUDGET).status_code == 201  # spending the whole budget is allowed
