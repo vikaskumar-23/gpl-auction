@@ -34,3 +34,14 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t gpl-auction .
+      - name: Smoke-test the container
+        run: |
+          docker run -d --name gpl -p 8000:8000 gpl-auction
+          for i in $(seq 1 20); do curl -fs localhost:8000/api/auction && break; sleep 1; done
+          curl -fs localhost:8000/ | grep -q "GPL Auction"
+          docker logs gpl
