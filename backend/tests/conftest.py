@@ -3,6 +3,9 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 
+AUCTIONEER = {"X-Role": "auctioneer"}
+MANAGER = {"X-Role": "manager"}
+
 
 @pytest.fixture(autouse=True)
 def temp_db(tmp_path, monkeypatch):
@@ -14,3 +17,10 @@ def temp_db(tmp_path, monkeypatch):
 def client():
     with TestClient(app) as c:  # runs the lifespan: schema + seed
         yield c
+
+
+@pytest.fixture
+def start(client):
+    return lambda player_id: client.post(
+        "/api/auction/start", json={"player_id": player_id}, headers=AUCTIONEER
+    )

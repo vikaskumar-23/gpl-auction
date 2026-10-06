@@ -3,7 +3,28 @@ checked against exactly the state it is about to change."""
 
 import sqlite3
 
+from app.db import transaction
+
 PLAYER_COLUMNS = "id, name, skill, base_price, status, sold_price, team_id"
+
+
+class AuctionError(Exception):
+    """A request the auction rules refuse. Sent to the client as
+    {"error": {"code": ..., "message": ...}} with this HTTP status."""
+
+    def __init__(self, status: int, code: str, message: str):
+        super().__init__(message)
+        self.status = status
+        self.code = code
+        self.message = message
+
+
+def money(lakh: int) -> str:
+    """1000 -> '₹10 Cr', 150 -> '₹1.5 Cr', 75 -> '₹75 L'."""
+    return f"₹{lakh / 100:g} Cr" if lakh >= 100 else f"₹{lakh} L"
+
+
+# ---------- reads ----------
 
 
 def list_players(conn: sqlite3.Connection) -> list[dict]:
@@ -59,3 +80,26 @@ def _bids(conn, player_id: int) -> list[dict]:
         (player_id,),
     )
     return [dict(r) for r in rows]
+
+
+# ---------- writes ----------
+
+
+def start_auction(conn: sqlite3.Connection, player_id: int) -> dict:
+    with transaction(conn):
+        current = _current_player(conn)
+        if current:
+            raise AuctionError(
+                409,
+                "AUCTION_IN_PROGRESS",
+                f"{current['name']} is already up for auction. Accept or reject that round first.",
+            )
+        player = _player(conn, player_id)
+        if player is None:
+            raise AuctionError(404, "PLAYER_NOT_FOUND", f"There is no player with id {player_id}.")
+        if player["status"] != "available":
+            raise AuctionError(
+                409, "PLAYER_NOT_AVAILABLE", f"{player['name']} has already been sold."
+            )
+        conn.execute("UPDATE players SET status = 'in_auction' WHERE id = ?", (player_id,))
+        return current_auction(conn)

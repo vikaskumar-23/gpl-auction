@@ -35,3 +35,7 @@ class Bid(BaseModel):
 class Auction(BaseModel):
     player: Player | None = Field(description="Player up for auction, or null")
     bids: list[Bid] = Field(description="This round's bids, highest first")
+
+
+class StartRequest(BaseModel):
+    player_id: int
