@@ -4,12 +4,14 @@ import asyncio
 import sqlite3
 from collections.abc import AsyncIterable
 from contextlib import asynccontextmanager, closing
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.sse import EventSourceResponse, ServerSentEvent
+from fastapi.staticfiles import StaticFiles
 
 from app import auction
 from app.auction import AuctionError
@@ -158,3 +160,12 @@ async def events() -> AsyncIterable[ServerSentEvent]:
             yield ServerSentEvent(event="ping", data=1)
         await asyncio.sleep(TICK)
         quiet += TICK
+
+
+# ---------- built frontend ----------
+
+# Serve the React build (frontend/dist, from `npm run build`) so one process runs everything.
+# Mounted last so every /api route above takes precedence.
+DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+if DIST.is_dir():
+    app.mount("/", StaticFiles(directory=DIST, html=True), name="web")
