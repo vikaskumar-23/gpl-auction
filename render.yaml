@@ -2,7 +2,7 @@
 # One-click deploy: https://render.com/deploy?repo=https://github.com/vikaskumar-23/gpl-auction
 services:
   - type: web
-    name: gpl-auction
+    name: gpl-auction-iitgoa # becomes https://gpl-auction-iitgoa.onrender.com
     runtime: docker
     plan: free
     region: singapore
