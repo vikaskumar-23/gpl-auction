@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/vikaskumar-23/gpl-auction/actions/workflows/ci.yml/badge.svg)](https://github.com/vikaskumar-23/gpl-auction/actions/workflows/ci.yml)
 
+**Live demo: https://gpl-auction-iitgoa.onrender.com** (Render free tier: it sleeps when idle, so the first load can take about a minute, and it starts with fresh data after a restart. Run it locally to see data persist.)
+
 A live player auction for the **IIT Goa Premier League**. One auctioneer puts players up one at a time, four team managers bid from their phones, and every screen updates the moment a bid lands. Selling a player moves them onto the winning team's sheet at the accepted price and takes that amount off the team's budget. Everything is stored in SQLite, so a refresh or a server restart shows the same rosters and budgets.
 
 **Stack:** FastAPI (Python 3.11) · SQLite · Server-Sent Events · React 19 + Vite · Tailwind CSS v4 · pytest · GitHub Actions · Docker
@@ -80,6 +82,10 @@ docker run -p 8000:8000 -e GPL_DB_PATH=/data/gpl.db -v gpl-data:/data gpl-auctio
 ```
 
 The volume keeps the database across container restarts. Open **http://127.0.0.1:8000**.
+
+### Option D: deploy to Render
+
+[`render.yaml`](render.yaml) is a Render Blueprint that deploys the Dockerfile as a free web service with a health check on `/api/auction`. Open https://render.com/deploy?repo=https://github.com/vikaskumar-23/gpl-auction, sign in with GitHub and apply the Blueprint. Every push to `main` redeploys.
 
 ### Reset the data
 
@@ -473,6 +479,7 @@ Rules that span tables, such as "bid above the current highest" and "within the 
 │       └── components/             # RolePicker, Header, AuctionStage, BidBox,
 │                                   # AuctioneerPanel, PlayerList, Rosters, ui
 ├── Dockerfile                      # builds the UI, then runs FastAPI serving it
+├── render.yaml                     # Render Blueprint for the live demo
 └── .github/workflows/ci.yml        # backend tests, frontend lint/build, Docker smoke test
 ```
 
