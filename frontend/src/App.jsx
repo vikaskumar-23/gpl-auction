@@ -19,7 +19,7 @@ export default function App() {
   }
 
   if (!state) {
-    return <p className="grid min-h-dvh place-items-center text-slate-400">Connecting to the auction…</p>
+    return <p className="grid min-h-dvh place-items-center text-chalk-muted">Connecting to the auction…</p>
   }
 
   const myTeam = session?.role === 'manager' ? state.teams.find((t) => t.id === session.teamId) : null
