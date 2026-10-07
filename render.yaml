@@ -1,0 +1,10 @@
+# Render Blueprint: one free web service built from the Dockerfile.
+# One-click deploy: https://render.com/deploy?repo=https://github.com/vikaskumar-23/gpl-auction
+services:
+  - type: web
+    name: gpl-auction
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    healthCheckPath: /api/auction
